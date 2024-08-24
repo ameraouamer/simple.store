@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+ 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'> 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+ <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                 <span class="image">
+                    <img src="images-removebg-preview.png" alt="">
+                </span>
+
+
+                <div class="text logo-text">
+                    
+                    <span class="name">ardui-share</span>
+                    <span class="profession">We make it easy</span>
+                </div>
+            </div>
+
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+
+        <div class="menu-bar">
+            <div class="menu">
+
+                <li class="search-box">
+                    <i class='bx bx-search icon'></i>
+                    <input type="text" placeholder="Search...">
+                </li>
+
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="adminhome.html">
+                            <i class='bx bx-home-alt icon' ></i>
+                            <span class="text nav-text">ALL PRODUCTS</span>
+                        </a>
+                    </li>
+                   
+                    <li class="nav-link">
+                        <a href="add.card.html">
+                            <i class='bx bx-plus-circle icon'></i>
+                            <span class="text nav-text">Add Yours</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bottom-content">
+             
+                <li class="">
+                    <a href="index.html">
+                        <i class='bx bx-log-out icon' ></i>
+                        <span class="text nav-text">Logout</span>
+                    </a>
+                </li>
+
+                <li class="mode">
+                    <div class="sun-moon">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Dark mode</span>
+
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+                
+            </div>
+        </div>
+
+    </nav>
+ 
+    <div class="wrapper">
+        <h2>Post Your Project</h2>
+        <div id="error_message"></div>
+        <form id="myform">
+            <div class="input_field">
+                <input type="file" accept="image/*" id="imageFile">
+            </div>
+            <div class="input_field">
+                <input type="text" placeholder="prix" id="cardName">
+            </div>
+            <div class="input_field">
+                <textarea placeholder="produit" id="description"></textarea>
+            </div>
+          <div class="btn">
+              <input type="submit" id="submit">
+          </div>
+        </form>
+      </div>
+      <script>
+     document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("myform");
+    const imageFileInput = document.getElementById("imageFile");
+    const cardContainer = document.getElementById("cardContainer");
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault(); // Prevent the form from submitting
+
+        // Validate inputs
+        if (!validate()) {
+            return;
+        }
+
+        // Process form submission here
+        // Extract data and create a new card
+        const cardName = document.getElementById("cardName").value;
+        const description = document.getElementById("description").value;
+        const imageFile = document.getElementById("imageFile").files[0];
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imageURL = e.target.result;
+            const cardData = {
+                imageURL: imageURL,
+                cardName: cardName,
+                description: description,
+            };
+
+            // Save the card data to localStorage
+            let savedCards = JSON.parse(localStorage.getItem("feedbackData")) || [];
+            savedCards.push(cardData);
+            localStorage.setItem("feedbackData", JSON.stringify(savedCards));
+
+            // Create and append the new card
+            const newCard = createCard(cardData);
+            cardContainer.appendChild(newCard);
+        };
+        reader.readAsDataURL(imageFile);
+
+        document.getElementById("error_message").innerHTML = ""; // Clear any previous error message
+        form.reset(); // Reset form after submission
+    });
+
+    // Function to validate form inputs
+    function validate() {
+        const imageFile = document.getElementById("imageFile").files[0];
+        const cardName = document.getElementById("cardName").value;
+        const description = document.getElementById("description").value;
+
+        if (!imageFile || !cardName || !description) {
+            document.getElementById("error_message").innerHTML = "All fields are required!";
+            return false;
+        }
+        document.getElementById("error_message").innerHTML = ""; // Clear error message
+        return true;
+    }
+
+    // Function to create a card
+    function createCard(data) {
+        const card = document.createElement("div");
+        card.classList.add("card-item");
+
+        const cardContent = document.createElement("div");
+        cardContent.classList.add("card-content");
+
+        const cardImage = document.createElement("img");
+        cardImage.src = data.imageURL;
+        cardImage.alt = "Card Image";
+
+        const cardTitle = document.createElement("span");
+        cardTitle.classList.add("title");
+        cardTitle.textContent = data.cardName;
+
+        const cardDescription = document.createElement("h3");
+        cardDescription.textContent = data.description;
+
+        cardContent.appendChild(cardImage);
+        cardContent.appendChild(cardTitle);
+        cardContent.appendChild(cardDescription);
+
+        card.appendChild(cardContent);
+
+        return card;
+    }
+
+    // Display saved cards on page load
+    const savedCards = JSON.parse(localStorage.getItem("feedbackData")) || [];
+    savedCards.forEach(function(cardData) {
+        const card = createCard(cardData);
+        cardContainer.appendChild(card);
+    });
+
+    // Existing sidebar and mode toggle functionality
+    const body = document.querySelector('body'),
+          sidebar = body.querySelector('nav'),
+          toggle = body.querySelector(".toggle"),
+          searchBtn = body.querySelector(".search-box"),
+          modeSwitch = body.querySelector(".toggle-switch"),
+          modeText = body.querySelector(".mode-text");
+
+    toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("close");
+    });
+
+    searchBtn.addEventListener("click", () => {
+        sidebar.classList.remove("close");
+    });
+
+    modeSwitch.addEventListener("click", () => {
+        body.classList.toggle("dark");
+
+        if (body.classList.contains("dark")) {
+            modeText.innerText = "Light mode";
+        } else {
+            modeText.innerText = "Dark mode";
+        }
+    });
+});
+
+    </script>
+    <script src="index.js"></script>
+    </body>
+    </html>

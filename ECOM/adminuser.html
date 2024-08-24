@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <title>Admin Users</title>
+    <style>
+     
+    </style>
+</head>
+<body>
+    <h1 align="center">List Of Users</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const userTableBody = document.getElementById("userTableBody");
+
+            // Function to retrieve user data from local storage
+            function getUserData() {
+                const storedData = localStorage.getItem("usersData");
+                return storedData ? JSON.parse(storedData) : [];
+            }
+
+            // Function to save user data to local storage
+            function saveUserData(data) {
+                localStorage.setItem("usersData", JSON.stringify(data));
+            }
+
+            // Display user data in the table
+            function displayUserData() {
+                const userData = getUserData();
+
+                // Clear existing rows
+                userTableBody.innerHTML = '';
+
+                // Add new rows for each user
+                userData.forEach((user, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.password}</td>
+                        <td><button onclick="deleteUser(${index})">Delete</button></td>
+                    `;
+                    userTableBody.appendChild(row);
+                });
+            }
+
+            // Function to delete a user
+            window.deleteUser = function(index) {
+                let userData = getUserData();
+                userData.splice(index, 1);
+                saveUserData(userData);
+                displayUserData();
+            }
+
+            // Display user data when the page loads
+            displayUserData();
+        });
+    </script>
+</body>
+</html>
+

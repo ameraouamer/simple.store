@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>View Feedback</title>
+</head>
+<body>
+    <h1> Users Feedbacks</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Feedback</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="feedbackTable">
+            <!-- Feedback entries will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
+            const tableBody = document.getElementById("feedbackTable");
+
+            feedbacks.forEach((feedback, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${feedback.username}</td>
+                                 <td>${feedback.email}</td>
+                                 <td>${feedback.phone}</td>
+                                 <td>${feedback.feedback}</td>
+                                 <td><button onclick="deleteFeedback(${index})">Delete</button></td>`;
+                tableBody.appendChild(row);
+            });
+        });
+
+        function deleteFeedback(index) {
+            const feedbacks = JSON.parse(localStorage.getItem("feedbacks"));
+            if (feedbacks && feedbacks.length > index) {
+                feedbacks.splice(index, 1); // Remove the feedback at the specified index
+                localStorage.setItem("feedbacks", JSON.stringify(feedbacks)); // Update local storage
+                document.location.reload(); // Optionally, refresh the page or you can remove the row from the DOM manually
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
